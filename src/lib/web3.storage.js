@@ -12,7 +12,7 @@ function blobToFile(theBlob, fileName) {
 	return theBlob;
 }
 
-export async function putObj(obj, name = uuidv4()) {
+export async function put(obj, name = uuidv4()) {
 	console.log(`[web3.storage] > putting`, obj, 'as', name);
 	const fileContent = JSON.stringify(obj);
 	const blob = new Blob([fileContent], { type: 'application/json' });
@@ -31,16 +31,16 @@ export async function putObj(obj, name = uuidv4()) {
 }
 
 
-export async function get(cid) {
+export async function getFiles(cid) {
   const res = await client.get(cid);
   if (res.ok) return await res.files();
   return [];
 }
 
-export async function getObj(cid, name = null) {
+export async function get(cid, name = null) {
 	console.log(`[web3.storage] > getting`, cid, '/', name);
 	console.time('[web3.storage] > quering IPFS...');
-  const files = await get(cid); 
+  const files = await getFiles(cid); 
 	console.timeEnd('[web3.storage] > quering IPFS...');
 	console.log(`[web3.storage] > got`, files.length, 'files');
 
