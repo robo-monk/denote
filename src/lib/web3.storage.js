@@ -29,3 +29,29 @@ export async function putObj(obj, name = uuidv4()) {
   console.log(`[web3.storage] > cid`, cid);
   console.log(`https://ipfs.io/ipfs/${cid}/${name}`)
 }
+
+
+export async function get(cid) {
+  const res = await client.get(cid);
+  if (res.ok) return await res.files();
+  return [];
+}
+
+export async function getObj(cid, name = null) {
+	console.log(`[web3.storage] > getting`, cid, '/', name);
+	console.time('[web3.storage] > quering IPFS...');
+  const files = await get(cid); 
+	console.timeEnd('[web3.storage] > quering IPFS...');
+	console.log(`[web3.storage] > got`, files.length, 'files');
+
+  const fileObj = name === null ? files[0] : files.find(f => f.name === name);
+  const text = fileObj ? await fileObj.text() : null;
+  let ret = text;
+  try {
+    ret = JSON.parse(text);
+  } catch(e) {
+    console.warn("[web3.storage] > file is not a valid JSON")
+  }
+	console.log(`[web3.storage] > received:`, ret);
+  return ret;
+}

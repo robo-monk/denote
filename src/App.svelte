@@ -1,7 +1,8 @@
 <script>
 	import logo from './assets/svelte.png';
-  import { putObj } from "./lib/web3.storage.js";
-	window.save = putObj; 
+  import { putObj, getObj } from "./lib/web3.storage.js";
+	window.put = putObj; 
+	window.get = getObj; 
 </script>
 
 <main>
