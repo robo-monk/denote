@@ -1,59 +1,50 @@
 <script>
-	import logo from './assets/svelte.png';
-  	import { put, get } from "./lib/web3.storage.js";
-  	import * as a from "./lib/encryption.js";
+	// import logo from './assets/svelte.png';
+  	// import { put, get } from "./lib/web3.storage.js";
+  	// import * as ff from "./lib/local.storage.js";
+  	// import * as a from "./lib/encryption.js";
+	import ServiceComponent from "./lib/Service.svelte"
+	import { Service } from "./lib/Service.class.js"
 
-	window.put = put; 
-	window.get = get; 
+	export const services = [
+		new Service("Twitter", "warzone"),
+		new Service("Facebook", "boomer memes"),
+		new Service("Github", "microsoft slave"),
+	]
 </script>
 
 <main>
-	<img src={logo} alt="Svelte Logo" />
-	<h1>Hello world!</h1>
+	<h1>IPM</h1>
 
-	<input type="file" />
+	{#each services as service}
+		<ServiceComponent service={service}></ServiceComponent>
+	{/each}
 </main>
 
-<style>
+<style global lang="scss">
+
 	:root {
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-			Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		--main: black;
+		--sec: gray;
+		--bg: whitesmoke;
 	}
 
-	main {
-		text-align: center;
-		padding: 1em;
-		margin: 0 auto;
+	.mono-font {
+		font-family: 'Anonymous Pro', monospace;
 	}
 
-	img {
-		height: 16rem;
-		width: 16rem;
-	}
+	html {
+		@extend .mono-font;
+		color: var(--main);
+		background-color: whitesmoke;
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4rem;
-		font-weight: 100;
-		line-height: 1.1;
-		margin: 2rem auto;
-		max-width: 14rem;
-	}
-
-	p {
-		max-width: 14rem;
-		margin: 1rem auto;
-		line-height: 1.35;
-	}
-
-	@media (min-width: 480px) {
-		h1 {
-			max-width: none;
+		* {
+			@extend .mono-font;
+			color: var(--main);
 		}
 
-		p {
-			max-width: none;
+		h1, h2, h3, h4, h5, h6 {
+			font-weight: 700;
 		}
 	}
 </style>

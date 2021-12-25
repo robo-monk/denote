@@ -1,26 +1,42 @@
-import { AES, enc } from "crypto-js";
+import { AES, enc, SHA512 } from "crypto-js";
 
-function encrypt(data, key, repetitions=8) {
+/*
+    NOTES: 
+    It's almost pointless to apply AES multiple times
+*/
+
+function hash(data) {
+    return SHA512(data);
+}
+
+function encrypt(data, key, repetitions=3) {
     let ciphertext = AES.encrypt(data, key).toString();
-    if (repetitions > 1) return encrypt(ciphertext, key, repetitions-1);
+    if (repetitions > 0) return encrypt(ciphertext, key, repetitions-1);
     return ciphertext;
 }
 
-function decrypt(ciphertext, key, repetitions=8) {
+function decrypt(ciphertext, key, repetitions=3) {
     let text = AES.decrypt(ciphertext, key).toString(enc.Utf8);
-    if (repetitions > 1) return decrypt(text, key, repetitions-1);
+    if (repetitions > 0) return decrypt(text, key, repetitions-1);
     return text;
 }
 
-function encryptObj(obj, key, repetitions=8) {
+function encryptObj(obj, key, repetitions=3) {
     return encrypt(JSON.stringify(obj), key, repetitions);
 }
 
-function decryptObj(objDigest, key, repetitions=8) {
-    return JSON.parse(decrypt(objDigest, key, repetitions));
+function decryptObj(objDigest, key, repetitions=3) {
+    let ret = {}
+    try {
+        ret = JSON.parse(decrypt(objDigest, key, repetitions))
+    } catch(e){
+        console.warn("not a json obj")
+    }
+
+    return ret;
 }
 
 
 export {
-    encrypt, decrypt, encryptObj, decryptObj
+    encrypt, decrypt, encryptObj, decryptObj, hash
 }
