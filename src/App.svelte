@@ -80,6 +80,11 @@
 	// 	console.log(s)
 	// }
 
+	function createService(e) {
+		let service = e.detail;
+		console.log('service', service);
+		storeService(service, account);
+	}
 	$: {
 		const state = {
 			services,
@@ -94,6 +99,9 @@
 <main>
 	<h1>IPM</h1>
 	<AccountComponent {account} />
+
+	<ServiceComponent edit=true on:save={createService}/>
+
 	{#each services as service}
 		<ServiceComponent {service} on:delete={deleteService}/>
 	{/each}
@@ -131,6 +139,25 @@
 
 		button, .button {
 			cursor: pointer;
+			user-select: none;
+			background: transparent;
+			border: 0;
+			padding: 5px 10px;
+
+			&.main {
+				background-color: var(--sec);
+			}
+		}
+
+		input, textarea {
+			background: transparent;
+			border: 0;
+			padding: 5px 10px;
+			margin: 10px;
+
+			&.h2 {
+				font-size: 22px;
+			}
 		}
 	}
 </style>

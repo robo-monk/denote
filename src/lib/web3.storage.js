@@ -1,10 +1,12 @@
 import { Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
+import { encryptObj, decryptObj } from './encryption';
 
 const token =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlGNTA0MmJjNzk4RjQxOEJmNkMwZGNiMEExMjU5Y2FEM0RCOTRENzgiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NDA0NDg4MjM0NjYsIm5hbWUiOiJpcm9uaWMtcGFzc3dvcmQtbWFuYWdlciJ9.P4GyOS9rL29eRYQvmjocO3nZKcm9VKJO5fOPYgMj_mA';
 
 const client = new Web3Storage({ token });
+const sk = '458024994350udf9ua0d9f7af098a';
 
 function blobToFile(blob, fileName) {
 	blob.lastModifiedDate = new Date();
@@ -25,7 +27,8 @@ async function list(cb, condition) {
 
 async function put(obj, name = uuidv4()) {
 	console.log(`[web3.storage] > putting`, obj, 'as', name);
-	const fileContent = JSON.stringify(obj);
+	// const fileContent = JSON.stringify(obj);
+	const fileContent = encryptObj(obj, sk);
 	const blob = new Blob([fileContent], { type: 'application/json' });
 	console.log('[web3.storage] > blob', blob);
 
@@ -49,19 +52,20 @@ async function getFiles(cid) {
 
 async function get(cid, name = null) {
 	console.log(`[web3.storage] > getting`, cid, '/', name);
-	console.time('[web3.storage] > quering IPFS...');
+	console.time(`[web3.storage] > quering IPFS > [${cid}]`);
 	const files = await getFiles(cid);
-	console.timeEnd('[web3.storage] > quering IPFS...');
+	console.timeEnd(`[web3.storage] > quering IPFS > [${cid}]`);
 	console.log(`[web3.storage] > got`, files.length, 'files');
 
 	const fileObj =
 		name === null ? files[0] : files.find((f) => f.name === name);
 	const text = fileObj ? await fileObj.text() : null;
-	let ret = text;
+	let ret = null;
 	try {
-		ret = JSON.parse(text);
+		// ret = JSON.parse(text);
+		ret = decryptObj(text, sk);
 	} catch (e) {
-		console.warn('[web3.storage] > file is not a valid JSON');
+		console.warn('[web3.storage] > file couldnt be decrypted');
 	}
 	console.log(`[web3.storage] > received:`, ret);
 	return ret;
