@@ -5,12 +5,11 @@ const storageKey = "Ironic."
 const secretKey = "123"
 
 function _data() {
-    return storage.getItem(storageKey) ? decryptObj(storage.getItem(storageKey), secretKey) : {};
+    return storage.getItem(storageKey) ? decryptObj(storage.getItem(storageKey), secretKey, 0) : {};
 }
 
 function _save(data) {
-    console.log("dataaa", data)
-    return storage.setItem(storageKey, encryptObj(data, secretKey));
+    return storage.setItem(storageKey, encryptObj(data, secretKey, 0));
 }
 
 function get(name) {

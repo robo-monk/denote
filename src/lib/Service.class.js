@@ -3,4 +3,8 @@ export class Service {
         this.name = name;
         this.description = description;
     }
+
+    static fromObj(obj) {
+        return new Service(obj.name, obj.description)
+    }
 }
