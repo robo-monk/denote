@@ -6,7 +6,7 @@ import { AES, enc, SHA512 } from "crypto-js";
 */
 
 function hash(data) {
-    return SHA512(data);
+    return SHA512(data).toString();
 }
 
 function encrypt(data, key, repetitions=3) {
