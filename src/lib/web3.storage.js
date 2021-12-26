@@ -12,7 +12,7 @@ function blobToFile(blob, fileName) {
 	return blob;
 }
 
-export async function list(cb, condition) {
+async function list(cb, condition) {
 	const files = [];
 	for await (const u of client.list()) {
 		if (!condition || condition(u)) {
@@ -23,7 +23,7 @@ export async function list(cb, condition) {
 	return files;
 }
 
-export async function put(obj, name = uuidv4()) {
+async function put(obj, name = uuidv4()) {
 	console.log(`[web3.storage] > putting`, obj, 'as', name);
 	const fileContent = JSON.stringify(obj);
 	const blob = new Blob([fileContent], { type: 'application/json' });
@@ -41,13 +41,13 @@ export async function put(obj, name = uuidv4()) {
 	console.log(`https://ipfs.io/ipfs/${cid}/${name}`);
 }
 
-export async function getFiles(cid) {
+async function getFiles(cid) {
 	const res = await client.get(cid);
 	if (res.ok) return await res.files();
 	return [];
 }
 
-export async function get(cid, name = null) {
+async function get(cid, name = null) {
 	console.log(`[web3.storage] > getting`, cid, '/', name);
 	console.time('[web3.storage] > quering IPFS...');
 	const files = await getFiles(cid);
@@ -66,3 +66,36 @@ export async function get(cid, name = null) {
 	console.log(`[web3.storage] > received:`, ret);
 	return ret;
 }
+
+async function destroy(cid, name = null) {
+	// console.log('destroying...');
+	// // console.log(client.endpoint)
+	// // `${client.endpoint}`
+	// const url = new URL(`user/uploads/${cid}`, client.endpoint);
+	// console.log('destroy url...', url);
+	// const res = await fetch(url.toString(), {
+	// 	method: 'DELETE',
+	// 	headers: {
+	// 		...Web3Storage.headers(token),
+	// 		'Access-Control-Request-Headers': 'Link',
+	// 	},
+	// });
+	// console.log(client);
+	// console.log('res', res);
+	// if (res.status === 404) {
+	// 	return undefined;
+	// }
+	// if (!res.ok) {
+	// 	throw new Error(res.statusText);
+	// }
+	// return res.json();
+}
+// console.log(`[web3.storage] > destroying`, cid, '/', name);
+// console.time('[web3.storage] > quering IPFS...');
+
+// await client.delete(cid)
+// https://api.web3.storage/user/uploads/bafybeievtn7oflpvb3s7o77lktfheeiyzaxvldiwx5hejttslnaqyq4vtm
+// console.log(`[web3.storage] > received:`, ret);
+// return ret;
+
+export { list, put, get, destroy };

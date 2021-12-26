@@ -9,26 +9,21 @@
 	import ServiceComponent from './lib/Service.svelte';
 	import AccountComponent from './lib/Account.svelte';
 	import { Service } from './lib/Service.class.js';
-	import { v4 as uuidv4 } from 'uuid';
 	import { Account } from './lib/Account.class.js';
 
 	window.web3 = Object.assign(window.web3 || {}, { storage: _web3Sstorage });
 
 	export let state = local.get('state') || {};
-	(async () => {
-		// console.log(await web3.storage.list());
-		web3.storage.list(
-			(i) => {
-				console.log(i);
-			},
-			(i) => i.name.length > 10
-		);
-	})();
 
+	export let services = state?.services?.map(s => Service.fromObj(s)) || [];
 	async function getAllServices(account) {
 		return await web3.storage.list(
-			(i) => {
-				console.log(i);
+			async (i) => {
+				if (services.find(s => s.cid == i.cid)) return;
+				let service = await web3.storage.get(i.cid);
+				services = [...services, new Service({
+					...service, cid: i.cid
+				})];
 			},
 			(i) => {
 				let [uuid, accountName, signature] = safeSplit(i.name)
@@ -37,42 +32,53 @@
 			}
 		);
 	}
+
+
 	async function storeService(service, account) {
 		if (!account) return new Error("no account")
-		if (account.services?.includes(service.name)) {
+		if (services?.some(s => s.name == service.name)) {
 			prompt(`A service named ${service.name} is already in your account!`)
 		}
 
-		let uuid = uuidv4()
-		let filename = safeJoin(uuid, account.name, account.sign(uuid))
-			// .map((n) => n.replaceAll('.', '[$dot$]'))
-			// .join('.');
-
+		let filename = safeJoin(service.uuid, account.name, account.sign(service.uuid))
 		let cid = await web3.storage.put(service, filename);
 		return cid
 	}
 
-	export let services = state?.services?.map(s => Service.fromObj(s)) || [
-		new Service("Twitter", "warzone"),
-		new Service("Facebook", "boomer memes"),
-		new Service("Github", "microsoft slaves"),
-	];
+	async function deleteService(e) {
+		let service = e.detail
+		console.log('deleting service....', service)
+		if (!account) throw new Error("no account")
 
-	export let account = Account.fromObj(state?.account || {
+		// if (!account.services?.some(s => service.cid == s.cid)) {
+		// 	alert("error deleting service")
+		// }
+
+		services = [ ...services.filter(s => s.cid != service.cid) ]
+		console.log(services)
+		await web3.storage.destroy(service.cid);
+	}
+
+	// console.log(web3.storage)
+
+	export let account = Account.fromObj(false && state?.account || {
 		name: "robomonk",
 		sk: "0x0850qjasdf092r9834ofa9df",
 		pk: "0x0948520-853092842-204849"
 	})
 
-	window.storeService = () => {
-		storeService(services[1], account);
-	}
+	getAllServices(account)
 
-	window.getServices = async () => {
-		let s = await getAllServices(account);
-		console.log(s)
+	window.storeService = async (obj) => {
+		console.log('services', services);
+		storeService(new Service({
+			...obj
+		}), account)
 	}
-
+	// window.getServices = async () => {
+	// 	let s = await getAllServices(account);
+	// 	console.log(s)
+	// }
 
 	$: {
 		const state = {
@@ -82,21 +88,22 @@
 
 		local.put(state, "state");
 	}
+
 </script>
 
 <main>
 	<h1>IPM</h1>
 	<AccountComponent {account} />
 	{#each services as service}
-		<ServiceComponent {service} />
+		<ServiceComponent {service} on:delete={deleteService}/>
 	{/each}
 </main>
 
 <style global lang="scss">
 	:root {
-		--main: black;
+		--main: whitesmoke;
 		--sec: gray;
-		--bg: whitesmoke;
+		--bg: #181818;
 	}
 
 	.mono-font {
@@ -106,7 +113,7 @@
 	html {
 		@extend .mono-font;
 		color: var(--main);
-		background-color: whitesmoke;
+		background-color: var(--bg);
 
 		* {
 			@extend .mono-font;
@@ -120,6 +127,10 @@
 		h5,
 		h6 {
 			font-weight: 700;
+		}
+
+		button, .button {
+			cursor: pointer;
 		}
 	}
 </style>

@@ -1,5 +1,8 @@
 import { safeJoin, safeSplit } from './utilities';
 import { hash } from './encryption.js';
+// import * as local from './lib/local.storage.js';
+// import * as _web3Sstorage from './lib/web3.storage.js';
+// window.web3 = Object.assign(window.web3 || {}, { storage: _web3Sstorage });
 
 export class Account {
 	constructor(name, sk, pk) {

@@ -1,10 +1,17 @@
-export class Service {
-    constructor(name, description) {
-        this.name = name;
-        this.description = description;
-    }
+import { v4 as uuidv4 } from 'uuid';
 
-    static fromObj(obj) {
-        return new Service(obj.name, obj.description)
-    }
+export class Service {
+	constructor({ name, cid, uuid = uuidv4(), description, icon }) {
+		Object.assign(this, {
+			uuid,
+            cid,
+			name,
+			description,
+			icon,
+		});
+	}
+
+	static fromObj(obj) {
+		return new Service(obj);
+	}
 }
