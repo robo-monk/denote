@@ -15,6 +15,10 @@ export class Account {
 		return hash(safeJoin(this.sk, this.name, str));
 	}
 
+    get signature() {
+        return this.sign(this.name);
+    }
+
     confirm(signature, target) {
         return hash(safeJoin(this.sk, this.name, target)) === signature;
     }

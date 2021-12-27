@@ -26,9 +26,9 @@
 				})];
 			},
 			(i) => {
-				let [uuid, accountName, signature] = safeSplit(i.name)
-				return accountName === account.name 
-							&& account.confirm(signature, uuid)
+				let [uuid, accountSignature, serviceSignature] = safeSplit(i.name)
+				return accountSignature === account.signature 
+							&& account.confirm(serviceSignature, uuid)
 			}
 		);
 	}
@@ -40,7 +40,7 @@
 			prompt(`A service named ${service.name} is already in your account!`)
 		}
 
-		let filename = safeJoin(service.uuid, account.name, account.sign(service.uuid))
+		let filename = safeJoin(service.uuid, account.signature, account.sign(service.uuid))
 		let cid = await web3.storage.put(service, filename);
 		return cid
 	}
