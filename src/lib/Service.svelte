@@ -38,7 +38,7 @@
             <span class='uuid'> { service.uuid } </span>
             <!-- <span class='password'> { service.password } </span> -->
             <div>
-                <input type="password" placeholder="Password" bind:value={service.password} bind:this={pwdInput}> 
+                <input readonly type="password" placeholder="Password" bind:value={service.password} bind:this={pwdInput}> 
                 <span class="button" on:click={ () => {
                         showPwd = !showPwd 
                         pwdInput.type = showPwd ? 'text' : 'password'
