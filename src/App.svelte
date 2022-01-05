@@ -1,6 +1,7 @@
 <script>
 	// @ts-nocheck
 	// import logo from './assets/svelte.png';
+	import * as f from "./lib/passwordGenerator.js"
 	import * as _web3Sstorage from './lib/web3.storage.js';
 	import * as local from './lib/local.storage.js';
 	import { safeJoin, safeSplit } from "./lib/utilities.js"
