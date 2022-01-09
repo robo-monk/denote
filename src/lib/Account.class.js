@@ -1,5 +1,5 @@
-import { safeJoin, safeSplit } from './utilities';
-import { hash } from './encryption.js';
+import { safeJoin, safeSplit } from './helpers/utilities';
+import { hash } from './helpers/encryption.js';
 // import * as local from './lib/local.storage.js';
 // import * as _web3Sstorage from './lib/web3.storage.js';
 // window.web3 = Object.assign(window.web3 || {}, { storage: _web3Sstorage });
