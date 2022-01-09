@@ -1,6 +1,7 @@
 import { Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
-import { encryptObj, decryptObj } from './encryption';
+import { encryptObj, decryptObj, encrypt, decrypt } from './encryption';
+import { safeJoin, safeSplit } from "./utilities";
 
 const token =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDlGNTA0MmJjNzk4RjQxOEJmNkMwZGNiMEExMjU5Y2FEM0RCOTRENzgiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NDA0NDg4MjM0NjYsIm5hbWUiOiJpcm9uaWMtcGFzc3dvcmQtbWFuYWdlciJ9.P4GyOS9rL29eRYQvmjocO3nZKcm9VKJO5fOPYgMj_mA';
@@ -16,8 +17,11 @@ function blobToFile(blob, fileName) {
 
 async function list(cb, condition) {
 	const files = [];
+	const deletedCids = [];
 	for await (const u of client.list()) {
-		if (!condition || condition(u)) {
+		if (safeSplit(u.name)[0] === 'destroyer') {
+			deletedCids.push(decrypt(safeSplit(u.name)[1], sk))
+		} else if (!deletedCids.includes(u.cid) && (!condition || condition(u))) {
 			files.push(u);
 			if (cb) cb(u, files);
 		}
@@ -72,6 +76,14 @@ async function get(cid, name = null) {
 }
 
 async function destroy(cid, name = null) {
+	console.log(`[web3.storage] > destroying`, cid, '/', name);
+	console.time(`[web3.storage] > quering IPFS > [${cid}]`);
+	return await put({
+		_destroy_: cid,
+	}, safeJoin('destroyer', encrypt(cid, sk)))
+}
+
+// async function destroy(cid, name = null) {
 	// console.log('destroying...');
 	// // console.log(client.endpoint)
 	// // `${client.endpoint}`
@@ -93,7 +105,7 @@ async function destroy(cid, name = null) {
 	// 	throw new Error(res.statusText);
 	// }
 	// return res.json();
-}
+// }
 // console.log(`[web3.storage] > destroying`, cid, '/', name);
 // console.time('[web3.storage] > quering IPFS...');
 

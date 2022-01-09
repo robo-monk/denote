@@ -12,7 +12,6 @@
     export let loading;
     $: {
         readonly = !edit;
-        loading = service.loading;
     }
 
 	function deleteService() {
@@ -93,6 +92,7 @@
 			</div>
 
 			<button class="main" on:click={save}> Save </button>
+			<button class="main" on:click={deleteService}> Delete </button>
 		<!-- </div> -->
 	{/if}
 	<!-- <input type="textarea" placeholder="Details"> -->

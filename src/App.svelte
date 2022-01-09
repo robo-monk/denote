@@ -18,12 +18,13 @@
 
 	export let services = state?.services?.map(s => Service.fromObj(s)) || [];
 	async function getAllServices(account) {
-		return await web3.storage.list(
+		await web3.storage.list(
 			async (i) => {
 				if (services.find(s => s.cid == i.cid)) return;
 				let newService = new Service({
 					...await web3.storage.get(i.cid),
-					cid: i.cid
+					cid: i.cid,
+					loading: true
 				});
 
 				if (services.find(s => s.uuid == newService.uuid)) {
@@ -38,6 +39,8 @@
 							&& account.confirm(serviceSignature, uuid)
 			}
 		);
+
+		services.map(s => s.loading = false)
 	}
 
 
@@ -61,9 +64,10 @@
 		// 	alert("error deleting service")
 		// }
 
-		services = [ ...services.filter(s => s.cid != service.cid) ]
-		console.log(services)
+		service.loading = true;
+		services = services
 		await web3.storage.destroy(service.cid);
+		services = [ ...services.filter(s => s.cid != service.cid) ]
 	}
 
 	// console.log(web3.storage)
