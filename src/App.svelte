@@ -82,7 +82,6 @@
 	getAllServices(account)
 
 	async function createService(e) {
-		showCreateNewPopup = false;
 		let service = e.detail;
 		let storeServicePromise = storeService(service, account);
 		service.loading = true;
@@ -118,8 +117,8 @@
 	<Modal id='create-service'>
 		<!-- <h1 contenteditable=true> Generate Password </h1> -->
 		<!-- <input class='h1' placeholder="Name"> -->
-		<ServiceComponent edit={true} on:save={() => {
-			createService(); closeModal('create-service')
+		<ServiceComponent edit={true} on:save={(event) => {
+			createService(event); closeModal('create-service')
 		}}/>
 	</Modal>
 	<Modal id='generate-pass'>

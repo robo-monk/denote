@@ -18,29 +18,34 @@
 	function deleteService() {
 		console.log('deleting...', service);
 		dispatch('delete', service);
+        close();
 	}
 
 	function save() {
 		dispatch('save', service);
+        // close();
 		console.log('saving service...', service);
 	}
 
     let wrapper;
     let modalContent;
+    let clone;
 
     function open() {
-        let clone = wrapper.cloneNode(true)
+        clone = wrapper.cloneNode(true)
 
-        getModal(service.uuid).open(() => {
-            edit = false;
-            clone.replaceWith(wrapper)
-            clone.remove()
-        });
+        getModal(service.uuid).open(clone);
 
         modalContent.innerHTML = null;
         wrapper.replaceWith(clone)
         edit = true;
         modalContent.appendChild(wrapper);
+    }
+
+    function close() {
+        edit = false;
+        clone.replaceWith(wrapper)
+        clone.remove()
     }
 
 </script>
