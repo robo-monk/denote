@@ -10,6 +10,9 @@
     export function openModal(id='') {
         return getModal(id)?.open();
     }
+    export function closeModal(id='') {
+        return getModal(id)?.close();
+    }
 
 </script>
 
@@ -72,7 +75,7 @@
         <button class='close' on:click={close}>
             ×
         </button>
-		<div id='modal-content'>
+		<div class='modal-content'>
 			<slot/>
 		</div>
 	</div>
@@ -114,6 +117,7 @@
             right: 0;
             font-size: 42px;
         }
+
         .modal-content {
             position: relative;
             width: 40vw;

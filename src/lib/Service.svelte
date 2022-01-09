@@ -1,6 +1,7 @@
 <script>
 	import { Service } from './Service.class';
-	import { createEventDispatcher } from 'svelte';
+    import Modal, { openModal, closeModal, getModal } from './Modal.svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	const dispatch = createEventDispatcher();
 	export let service = new Service({});
 	export let expanded = false;
@@ -24,9 +25,32 @@
 		console.log('saving service...', service);
 	}
 
+    let wrapper;
+    let modalContent;
+
+    function open() {
+        let clone = wrapper.cloneNode(true)
+
+        getModal(service.uuid).open(() => {
+            edit = false;
+            clone.replaceWith(wrapper)
+            clone.remove()
+        });
+
+        modalContent.innerHTML = null;
+        wrapper.replaceWith(clone)
+        edit = true;
+        modalContent.appendChild(wrapper);
+    }
+
 </script>
 
-<div class="service-wrapper bordered {expanded ? 'expanded' : ''} { loading ? 'loading' : '' }">
+<Modal id={service.uuid} >
+    <div bind:this={modalContent}>
+    </div>
+</Modal>
+
+<div class="service-wrapper bordered {expanded ? 'expanded' : ''} { loading ? 'loading' : '' }" bind:this={wrapper}>
 	<input
 		type="text"
 		placeholder="Name"
@@ -43,7 +67,8 @@
 	/>
 
 	{#if !edit}
-		<div class='button fit p-0' on:click={() => (expanded = !expanded)}>
+		<!-- <div class='button fit p-0' on:click={() => (expanded = !expanded)}> -->
+		<div class='button fit p-0' on:click={open}>
 			{expanded ? 'hide details' : 'show details'}
 		</div>
 	{/if}

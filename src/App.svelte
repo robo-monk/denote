@@ -10,7 +10,7 @@
 	import AccountComponent from './lib/Account.svelte';
 	import { Service } from './lib/Service.class.js';
 	import { Account } from './lib/Account.class.js';
-	import Modal, { getModal, openModal } from "./lib/Modal.svelte"
+	import Modal, { getModal, openModal, closeModal } from "./lib/Modal.svelte"
 	import PasswordGenerator from "./lib/PasswordGenerator.svelte"
 
 	window.web3 = Object.assign(window.web3 || {}, { storage: _web3Sstorage });
@@ -101,9 +101,6 @@
 		local.put(state, "state");
 	}
 
-	let showCreateNewPopup;
-	let showGenerateNewPasswordPopup;
-
 </script>
 
 <main>
@@ -121,7 +118,9 @@
 	<Modal id='create-service'>
 		<!-- <h1 contenteditable=true> Generate Password </h1> -->
 		<!-- <input class='h1' placeholder="Name"> -->
-		<ServiceComponent edit={true} on:save={createService}/>
+		<ServiceComponent edit={true} on:save={() => {
+			createService(); closeModal('create-service')
+		}}/>
 	</Modal>
 	<Modal id='generate-pass'>
 		<!-- <h1 contenteditable=true> Generate Password </h1> -->
