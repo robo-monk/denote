@@ -1,2 +1,3 @@
-# Ironic Password Manager 
-A decentralized password manager that uses IPFS
+# DENOTE
+
+A decentralized password and notes manager that uses IPFS

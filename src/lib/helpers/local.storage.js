@@ -1,7 +1,7 @@
 import { encryptObj, decryptObj } from './encryption';
 
 const storage = localStorage;
-const storageKey = 'Ironic.';
+const storageKey = 'Denote.';
 const secretKey = '123';
 
 function _data() {

@@ -14,7 +14,7 @@ export default defineConfig({
 			},
 		}),
 	],
-	base: '/ironic-password-manager/',
+	base: '/denote/',
 	build: {
 		outDir: 'docs',
 	},
