@@ -6,5 +6,5 @@ export const secureRandomInt = (min = 0, max = 1) => Math.floor(secureRandom() *
 
 export function getRandomWords(len = 32) {
     let words = (new Array(len)).fill(0).map(() => wordList[secureRandomInt(0, wordList.length)])
-    return words;
+    return words.join(' ').trim();
 }
