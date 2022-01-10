@@ -65,6 +65,7 @@
 		// 	alert("error deleting service")
 		// }
 
+		closeModal(service.uuid);
 		service.loading = true;
 		services = services
 		await web3.storage.destroy(service.cid);
@@ -82,14 +83,19 @@
 	getAllServices(account)
 
 	async function createService(e) {
-		let service = e.detail;
-		let storeServicePromise = storeService(service, account);
-		service.loading = true;
-		services = [service, ...services];
-		await storeServicePromise;
-		service.loading = false;
+		let newService = e.detail;
+		let storeServicePromise = storeService(newService, account);
+		newService.loading = true;
+		services = [newService, ...services];
+		let cid = await storeServicePromise;
 
-		services = services;	
+		console.log('cid is', cid)
+		newService.cid = cid
+		newService.loading = false;
+		console.log(newService.uuid, services)
+
+		services = services.map(s => s.uuid == newService.uuid ? newService : s)
+		console.log('services', services)
 	}
 	$: {
 		const state = {
@@ -118,7 +124,7 @@
 		<!-- <h1 contenteditable=true> Generate Password </h1> -->
 		<!-- <input class='h1' placeholder="Name"> -->
 		<ServiceComponent edit={true} on:save={(event) => {
-			createService(event); closeModal('create-service')
+			closeModal('create-service');createService(event); 
 		}}/>
 	</Modal>
 	<Modal id='generate-pass'>

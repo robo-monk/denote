@@ -46,6 +46,7 @@ async function put(obj, name = uuidv4()) {
 	console.timeEnd('[web3.storage] > uploading to IPFS...');
 	console.log(`[web3.storage] > cid`, cid);
 	console.log(`https://ipfs.io/ipfs/${cid}/${name}`);
+	return cid;
 }
 
 async function getFiles(cid) {

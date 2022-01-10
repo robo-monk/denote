@@ -56,6 +56,7 @@
         opacity = false
         setTimeout(() => {
             visible=false
+            console.log('close callback', closeCallback)
             if(closeCallback) closeCallback(retVal)
         }, animationTime)
     }

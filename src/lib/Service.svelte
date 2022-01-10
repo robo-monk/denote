@@ -32,9 +32,10 @@
     let clone;
 
     function open() {
+		console.log('opening....', wrapper, modalContent, clone)
         clone = wrapper.cloneNode(true)
 
-        getModal(service.uuid).open(clone);
+        getModal(service.uuid).open(close);
 
         modalContent.innerHTML = null;
         wrapper.replaceWith(clone)
