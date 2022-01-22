@@ -109,7 +109,7 @@
 </script>
 
 <main>
-	<h1>IPM</h1>
+	<h1>Denote</h1>
 	<AccountComponent {account} />
 	<button class='main' on:click={() => openModal('create-service')}>
 		New
@@ -147,9 +147,9 @@
 <style global lang="scss">
 	:root {
 		--main: whitesmoke;
-		// --sec: rgb(39, 62, 138);
-		--sec: #FF785A;
-		--bg: #181818;
+		--sec: rgb(39, 62, 138);
+		// --sec: #525252;
+		--bg: #030303;
 	}
 
 	.mono-font {
@@ -157,6 +157,9 @@
 	}
 
 
+	main {
+		margin: 15px;
+	}
 	.flex {
 		display: flex;
 		align-items: center;
@@ -190,8 +193,8 @@
 	}
 
 	.bordered {
-		border: 2px solid var(--sec);
-		border-radius: 5px;
+		border: 1px solid var(--sec);
+		// border-radius: 5px;
 	}
 
 	body {
@@ -238,11 +241,17 @@
 		button, .button {
 			cursor: pointer;
 			user-select: none;
+			flex-wrap: nowrap;
+			// width: fit-content;
+			white-space: nowrap;
 			background: transparent;
 			border: 0;
-			padding: 12px 10px;
-			max-width: 100px;
-			border-radius: 5px;
+			padding: 12px 15px;
+			display: inline-flex;
+			margin: 5px 0;
+			justify-content: center;
+			text-align: center;
+			// border-radius: 5px;
 			font-weight: 900;
 			@extend .default-transition;
 
@@ -257,6 +266,9 @@
 			&.fit {
 				min-width: fit-content;
 			}
+
+			&.danger {
+				background-color: rgb(184, 38, 12)			}
 		}
 
 		.default-transition {
@@ -264,19 +276,19 @@
 		}
 		input, textarea {
 			background: transparent;
-			border: 2px solid transparent;
+			border: 1px solid transparent;
 			padding: 12px 10px;
 			margin: 5px -10px;
 			// margin: 10px 0;
 			outline: 0;
 			@extend .default-transition;
-				border-radius: 5px;
+				// border-radius: 5px;
 
 			&:hover {
-				border: 2px solid rgba(245, 245, 245, 0.2);
+				border: 1px solid rgba(245, 245, 245, 0.2);
 			}
 			&:focus {
-				border: 2px solid rgba(245, 245, 245, 0.6);
+				border: 1px solid rgba(245, 245, 245, 0.6);
 			}
 		}
 

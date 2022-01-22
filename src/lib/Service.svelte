@@ -32,6 +32,7 @@
     let clone;
 
     function open() {
+		if (edit) return;
 		console.log('opening....', wrapper, modalContent, clone)
         clone = wrapper.cloneNode(true)
 
@@ -56,7 +57,8 @@
     </div>
 </Modal>
 
-<div class="service-wrapper bordered {expanded ? 'expanded' : ''} { loading ? 'loading' : '' }" bind:this={wrapper}>
+<div class="service-wrapper bordered {expanded ? 'expanded' : ''} { loading ? 'loading' : '' }" bind:this={wrapper} 
+on:click={open}>
 	<input
 		type="text"
 		placeholder="Name"
@@ -71,13 +73,6 @@
 		bind:value={service.username}
         {readonly}
 	/>
-
-	{#if !edit}
-		<!-- <div class='button fit p-0' on:click={() => (expanded = !expanded)}> -->
-		<div class='button fit p-0' on:click={open}>
-			{expanded ? 'hide details' : 'show details'}
-		</div>
-	{/if}
 
 	{#if expanded || edit}
 		<!-- <div> -->
@@ -123,7 +118,7 @@
 			</div>
 
 			<button class="main" on:click={save}> Save </button>
-			<button class="main" on:click={deleteService}> Delete </button>
+			<button class="main danger" on:click={deleteService}> Delete </button>
 		<!-- </div> -->
 	{/if}
 	<!-- <input type="textarea" placeholder="Details"> -->
@@ -131,6 +126,7 @@
 
 <style lang="scss">
 	.service-wrapper {
+		background-color: #18181893;
         &.loading {
             border-color: gray !important;
             opacity: .7;
