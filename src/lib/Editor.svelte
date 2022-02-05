@@ -85,26 +85,26 @@
                 },
 
             ]).map(fn=>`${fn.toString()};`).join('\n');
-            function _eval(code) {
-                    // if (!name) name = nanoid()
+            function _eval(code, id) {
+                // if (!id) id = nanoid()
                 return new Promise(resolve => {
-                    // dont load it twice
-                    // if (scriptExists) return resolve();
-                    // console.time("load " + name);
-                    let script = document.createElement("script");
-                    // if (name) script.id = name;
-                    // script.setAttribute("src", url);
+                    console.time("load");
+                    let script = document.querySelector("script#executor");
+                    if (script) script.remove();
+
+                    script = document.createElement("script");
+                    script.id = "executor";
                     script.setAttribute('type', "module");
+                    // script.setAttribute("src", url);
                     script.innerHTML = code;
                     document.body.appendChild(script);
-                    script.addEventListener("load", () => {
-                        // console.timeEnd("load " + name);
-                        resolve();
-                    }, {once: true});
                 });
             }
 
-            _eval(editor.getValue())
+            _eval(editor.getValue()
+                .replaceAll("from 'sky:", "from 'https://cdn.skypack.dev/")
+                .replaceAll('from "sky:', 'from "https://cdn.skypack.dev/')
+            )
 
 //             import confetti from 'https://cdn.skypack.dev/canvas-confetti';
 // confetti();
@@ -117,6 +117,7 @@
 			// monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyM
 		, () => {
             // console.log('test')
+            editor.getAction('editor.action.formatDocument').run()
             exec()
         });
 
