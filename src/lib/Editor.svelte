@@ -1,6 +1,7 @@
 <script>
-
     import { onMount } from 'svelte'; 
+    import { nanoid } from 'nanoid'
+    import Mousetrap from 'mousetrap'
     import * as monaco from 'monaco-editor';
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
     import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
@@ -33,38 +34,105 @@
     onMount(() => {
         let editor = monaco.editor.create(container, {
             // value: "function hello() {\n\talert('Hello world!');\n}",
-            language: 'markdown',
+            // language: 'markdown',
+            language: 'javascript',
             theme: 'vs-dark',
             minimap: {
                 enabled: false
             },
             // lineNumbers: (t) => `${t}>`,
             lineNumbers: false,
-            
         });
 
         let skipWatch = false;
         if (localStorage.getItem("model")) {
             skipWatch = true;
-            let { state, value } = JSON.parse(localStorage.getItem('model'))
+            let { state, value, options } = JSON.parse(localStorage.getItem('model'))
             // console.log('model', model)
             // editor.restoreViewState(model);
             editor.restoreViewState(state);
             editor.setValue(value)
-            setTimeout(() => {
-                skipWatch = false;
-            }, 1000)
+            // editor.updateOptions(options || {})
+
+
+            skipWatch = false;
         }
+
+		console.log(monaco.KeyMod.CtrlCmd) 
+		console.log(monaco.KeyCode.KeyK) 
+        console.log(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK)
+        // | monaco.KeyCode.KeyK
+        
+        function exec() {
+            const polyfills = ([
+                function require(url, name) {
+                    // if (!name) name = nanoid()
+                    const scriptExists = document.head.querySelector("script#" + name);
+                    return new Promise(resolve => {
+                        // dont load it twice
+                        if (scriptExists) return resolve();
+                        console.time("load " + name);
+                        let script = document.createElement("script");
+                        if (name) script.id = name;
+                        script.setAttribute("src", url);
+                        script.setAttribute('type', "module");
+                        document.head.appendChild(script);
+                        script.addEventListener("load", () => {
+                            console.timeEnd("load " + name);
+                            resolve();
+                        }, {once: true});
+                    });
+                },
+
+            ]).map(fn=>`${fn.toString()};`).join('\n');
+            function _eval(code) {
+                    // if (!name) name = nanoid()
+                return new Promise(resolve => {
+                    // dont load it twice
+                    // if (scriptExists) return resolve();
+                    // console.time("load " + name);
+                    let script = document.createElement("script");
+                    // if (name) script.id = name;
+                    // script.setAttribute("src", url);
+                    script.setAttribute('type', "module");
+                    script.innerHTML = code;
+                    document.body.appendChild(script);
+                    script.addEventListener("load", () => {
+                        // console.timeEnd("load " + name);
+                        resolve();
+                    }, {once: true});
+                });
+            }
+
+            _eval(editor.getValue())
+
+//             import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+// confetti();
+            // const asyncWrap = (v) => `(async () => { ${v} })()`;
+
+            // (new Function(asyncWrap(polyfills + editor.getValue())))()
+        }
+        editor.addCommand(
+			monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter
+			// monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyM
+		, () => {
+            // console.log('test')
+            exec()
+        });
+
+
 
         editor.onDidChangeModelContent(e => {
             if (skipWatch) return;
             console.log(e)
             let value = editor.getValue()
             let state = editor.saveViewState()
+            let options = editor.getRawOptions()
             // v = stringify(v);
             // console.log(editor.saveViewState())
+        // editor.getContribution
             localStorage.setItem('model', JSON.stringify({
-                state, value
+                state, value, options
             }));
         })
 

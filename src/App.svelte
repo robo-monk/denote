@@ -55,11 +55,10 @@
 
 <style global lang="scss">
 	.content {
-		width: 80vw;
-		height: 80vh;
+		width: 100%;
+		height: 100vh;
 		border: 1px solid whitesmoke;
 		margin: auto;
-		padding: 20px 30px;
 		position: relative;
 	}
 	:root {
