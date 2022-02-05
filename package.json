@@ -13,7 +13,12 @@
     "vite": "^2.7.2"
   },
   "dependencies": {
+    "caret-pos": "^2.0.0",
     "crypto-js": "^4.1.1",
+    "flatted": "^3.2.5",
+    "input-format": "^0.3.7",
+    "micromark": "^3.0.10",
+    "monaco-editor": "^0.32.1",
     "sass": "^1.45.1",
     "svelte-preprocess": "^4.10.1",
     "uuid": "^8.3.2",

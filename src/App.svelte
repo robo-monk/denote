@@ -1,150 +1,67 @@
 <script>
-	// @ts-nocheck
-	// import logo from './assets/svelte.png';
-	import * as _web3Sstorage from './lib/helpers/web3.storage.js';
-	import * as local from './lib/helpers/local.storage.js';
-	import { safeJoin, safeSplit } from "./lib/helpers/utilities.js"
-	// import * as ff from "./lib/local.storage.js";
-	// import * as a from "./lib/encryption.js";
-	import ServiceComponent from './lib/Service.svelte';
-	import AccountComponent from './lib/Account.svelte';
-	import { Service } from './lib/Service.class.js';
-	import { Account } from './lib/Account.class.js';
-	import Modal, { getModal, openModal, closeModal } from "./lib/Modal.svelte"
-	import PasswordGenerator from "./lib/PasswordGenerator.svelte"
+	// import {micromark} from 'micromark';
+	import { position, offset } from 'caret-pos';
+	import Editor from "./lib/Editor.svelte";
 
-	window.web3 = Object.assign(window.web3 || {}, { storage: _web3Sstorage });
+	let text;
+	let html;
+	let content;
+	let _parsing=false;
+	// $: {
+	// 	if (content && !_parsing) {
+	// 		_parsing=true;
 
-	export let state = local.get('state') || {};
+	// 		// let active = document.activeElement;
+	// 		let active = window.getSelection().focusNode;
+	// 		if (active) {
+	// 			try {
+	// 				console.log('active', active.parentElement)
+	// 				active.parentElement.contentEditable = true;
+	// 				let pos = position(active.parentElement);
+	// 				console.log('post', pos)
+	// 			} catch(e) {
+	// 				console.error(e)
+	// 			}
+	// 		}
+	// 		console.log(html)
+	// 		// const format = templateFormatter(TEMPLATE)
 
-	export let services = state?.services?.map(s => Service.fromObj(s)) || [];
-	async function getAllServices(account) {
-		await web3.storage.list(
-			async (i) => {
-				if (services.find(s => s.cid == i.cid)) return;
-				let newService = new Service({
-					...await web3.storage.get(i.cid),
-					cid: i.cid,
-					loading: true
-				});
-
-				if (services.find(s => s.uuid == newService.uuid)) {
-					services = services.map(s => s.uuid == newService.uuid ? newService : s);
-				} else {
-					services = [...services, newService];
-				};
-			},
-			(i) => {
-				let [uuid, accountSignature, serviceSignature] = safeSplit(i.name)
-				return accountSignature === account.signature 
-							&& account.confirm(serviceSignature, uuid)
-			}
-		);
-
-		services.map(s => s.loading = false)
-	}
-
-
-	async function storeService(service, account) {
-		if (!account) return new Error("no account")
-		if (services?.some(s => s.name == service.name)) {
-			return alert(`A service named ${service.name} is already in your account!`)
-		}
-
-		let filename = safeJoin(service.uuid, account.signature, account.sign(service.uuid))
-		let cid = await web3.storage.put(service, filename);
-		return cid
-	}
-
-	async function deleteService(e) {
-		let service = e.detail
-		console.log('deleting service....', service)
-		if (!account) throw new Error("no account")
-
-		// if (!account.services?.some(s => service.cid == s.cid)) {
-		// 	alert("error deleting service")
-		// }
-
-		closeModal(service.uuid);
-		service.loading = true;
-		services = services
-		await web3.storage.destroy(service.cid);
-		services = [ ...services.filter(s => s.cid != service.cid) ]
-	}
-
-	// console.log(web3.storage)
-
-	export let account = Account.fromObj(false && state?.account || {
-		name: "robomonk",
-		sk: "0x0850qjasdf092r9834ofa9df",
-		pk: "0x0948520-853092842-204849"
-	})
-
-	getAllServices(account)
-
-	async function createService(e) {
-		let newService = e.detail;
-		let storeServicePromise = storeService(newService, account);
-		newService.loading = true;
-		services = [newService, ...services];
-		let cid = await storeServicePromise;
-
-		console.log('cid is', cid)
-		newService.cid = cid
-		newService.loading = false;
-		console.log(newService.uuid, services)
-
-		services = services.map(s => s.uuid == newService.uuid ? newService : s)
-		console.log('services', services)
-	}
-	$: {
-		const state = {
-			services,
-			account
-		}
-
-		local.put(state, "state");
-	}
+	// 		// text;
+	// 		// console.log('content', content.innerText)
+	// 		// let _text = content.innerText;
+	// 		// console.log(_text);
+	// 		// if (_text) {
+	// 		// 	html = micromark(_text);
+	// 		// 	console.log('html', html);
+	// 		// 	// content.innerHTML = html;
+	// 		// 	// console.log('htmol', html)
+	// 		// }
+	// 		_parsing=false;
+	// 	};// 
+	// }
 
 </script>
 
 <main>
-	<h1>Denote</h1>
-	<AccountComponent {account} />
-	<button class='main' on:click={() => openModal('create-service')}>
-		New
-	</button>
-	<button class='main' on:click={() => openModal('generate-pass')}>
-		Make new Password
-	</button>
-
-
-
-	<Modal id='create-service'>
-		<!-- <h1 contenteditable=true> Generate Password </h1> -->
-		<!-- <input class='h1' placeholder="Name"> -->
-		<ServiceComponent edit={true} on:save={(event) => {
-			closeModal('create-service');createService(event); 
-		}}/>
-	</Modal>
-	<Modal id='generate-pass'>
-		<!-- <h1 contenteditable=true> Generate Password </h1> -->
-		<!-- <input class='h1' placeholder="Name"> -->
-		<PasswordGenerator/>
-		<!-- <ServiceComponent edit={true} on:save={createService}/> -->
-	</Modal>
-
-
-
-
-	<div class='flex wrap' style="gap: 10px;">
-		{#each services as service}
-			<ServiceComponent {service} edit={false} loading={service.loading} on:delete={deleteService}/>
-		{/each}
+	<div class='content'>
+		<Editor/>
 	</div>
+	<!-- <div class='content' bind:this={content} bind:textContent={text} bind:innerHTML={html} contenteditable="true"> -->
+		<!-- # Test <br> -->
+		<!-- --- <br> -->
+		<!-- *this has* to be **bold** -->
+	<!-- </div> -->
 </main>
 
 <style global lang="scss">
+	.content {
+		width: 80vw;
+		height: 80vh;
+		border: 1px solid whitesmoke;
+		margin: auto;
+		padding: 20px 30px;
+		position: relative;
+	}
 	:root {
 		--main: whitesmoke;
 		--sec: rgb(39, 62, 138);
